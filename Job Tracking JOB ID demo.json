@@ -1,0 +1,178 @@
+{
+  "name": "Job Tracking JOB ID demo",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "Job ID",
+              "type": "number"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1db6f320-028b-4e7b-a023-5e182ecce446",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "url": "=https://appsrv.directcouriers.com.au/online/jobtrackgen.cl?Job_ID={{ $json['Job ID'] }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        368,
+        160
+      ],
+      "id": "725b9b0b-4351-41ad-be49-f8b435c6f428",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "functionCode": "const content = ($json.body || $json.data || '').toUpperCase();\n\nconst genericKeywords = [\n  \"HOME\",\n  \"TOOLS\",\n  \"CONTACT US\",\n  \"TERMS & CONDITIONS\",\n  \"DIRECT JOB TRACK\",\n  \"NO JOB FOUND\",\n  \"NOT FOUND\"\n];\n\nfor (const keyword of genericKeywords) {\n  if (content.includes(keyword)) {\n    return [{ valid: false }];\n  }\n}\nreturn [{ valid: true }];\n"
+      },
+      "name": "Check Validity",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        560,
+        176
+      ],
+      "id": "466c04f8-83c6-410d-9d15-841802a66cea"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.valid }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "IF Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        752,
+        96
+      ],
+      "id": "52c92418-b3aa-427f-83e1-4d27da6349dc"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "message",
+              "value": "=Here is your tracking link: =https://appsrv.directcouriers.com.au/online/jobtrackgen.cl?Job_ID={{ $('When Executed by Another Workflow').item.json['Job ID'] }}\n\n\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Return Success Message",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        16
+      ],
+      "id": "a0b679cf-6af3-4dc6-8b6e-a5400c253d9c"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "message",
+              "value": "Sorry, we couldn’t find any tracking info. Please check the number or visit https://www.directcouriers.com.au/bookings or call 13 16 10."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Return Fail Message",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        1088,
+        192
+      ],
+      "id": "2b8e8a1b-02ed-4e33-8f04-0456c1ead898"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Check Validity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Validity": {
+      "main": [
+        [
+          {
+            "node": "IF Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Valid?": {
+      "main": [
+        [
+          {
+            "node": "Return Success Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return Fail Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "bf27a787-2d14-4a60-90da-90b72e5bb54b",
+  "meta": {
+    "instanceId": "290a562048df3bc87a0e698bc107e3dbe88ada8eddff0a3ba0750bc230380c39"
+  },
+  "id": "tiyIzoWDH3ybxBMA",
+  "tags": []
+}
