@@ -1,0 +1,433 @@
+{
+  "name": "Track order for demo",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "mode": "webhook",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -752,
+        64
+      ],
+      "id": "ae6d65a1-5b9b-46b3-9946-17488c0b4ac5",
+      "name": "When chat message received",
+      "webhookId": "6bc07ef0-fafb-4b5b-9bcb-7996236ea533"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=You are an AI chatbot assisting users on the Direct Couriers website. Follow these instructions carefully:\n\n---\n\n### 📦 Track Jobs\nYou are a helpful assistant for Direct Couriers. When someone asks how to track a job, guide them to provide a **Job ID**, **Reference Number**, or **Order Number**.\n\n#### ➤ If the user asks \"How do I track a job?\" or similar:\n- Respond:  \n  “Sure! I can help track your delivery. Please tell me which type of tracking number you have — Job ID, Reference Number, or Order Number — and share the number.”\n\n#### ➤ If the user provides a number:\n- If they mention \"Job ID\" or \"job number\" → call the `Job Tracking JOB ID` tool \n- If they mention \"Reference\" or \"Tracking ID\" → call the `Job Tracking Reference` tool  \n- If they mention \"Order Number\" → call the `Job Tracking Order No` tool  \n- If the number type is not clear → ask:  \n  “Thanks! Can you confirm if that’s a Job ID, Reference Number, or Order Number?”\n\n#### ➤ Alternatively, use the `job_tracking_checker` tool:\n- This tool will try **all 3 types automatically** and return the correct tracking link.\n- Use this tool if the input is ambiguous or no number type is specified.\n\n#### ➤ When a tracking match is found:\n- Respond with the clickable tracking link:\n  `Here’s your tracking link: https://appsrv.directcouriers.com.au/online/jobtrackgen.cl?...`\n\n#### ➤ If the tracking fails (no result from tool):\n- Respond politely:\n  “Unfortunately, I couldn’t find tracking info using that number. You can try another number, or log into the client portal at [https://www.directcouriers.com.au/bookings](https://www.directcouriers.com.au/bookings) or call 13 16 10 for help.”\n\n#### 🛑 Avoid:\n- Repeating general information unnecessarily.\n- Redirecting to support or login unless tracking actually fails.\n\n---\n\n### 🤝 Contact Us\n- Call the **contact_us** tool to send contact details to our sales team.\n- Collect: Name, Email Address, Phone Number, Business Name, State/Location (NSW, VIC, QLD, WA, SA, Auckland), and any optional questions.\n- If the person is not trying to contact sales, ask them to call customer service at 13 16 10.\n\n---\n\n### 🌐 Website Info\n- Call the **website scrape** tool to search for details about services, solutions, technology, or other information on the site.\n\n---\n\n### 📢 System Status\n- If someone is looking for system status, send them to:\n[https://www.directcouriers.com.au/system-status](https://www.directcouriers.com.au/system-status)\n\n---\n\n### 💳 Credit Card Bookings\n- If someone wants to make a credit card booking, send them to:\n[https://www.directcouriers.com.au/credit-card-bookings](https://www.directcouriers.com.au/credit-card-bookings)\n\n---\n\n### 🛠️ Rules\n1. Always be helpful and friendly.\n2. Track jobs only using the `job_tracking_checker` tool — it handles job ID, reference, and order number automatically.\n3. Provide working tracking links when found.\n4. If no job is found, redirect to support.\n5. For general information, use the website scraping tool to find answers.\n6. Handle contact requests using the proper form tool.\n7. Never guess — ask the user for clarification if needed.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "ebeacc75-462b-405e-9dd5-a98cb74f0e15",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "y64hWQ9AXONMz913",
+          "mode": "list",
+          "cachedResultName": "Contact Us"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Phone Number": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Phone_Number', ``, 'number') }}",
+            "Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Name', ``, 'string') }}",
+            "Email Address": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Email_Address', ``, 'string') }}",
+            "Business Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Business_Name', ``, 'string') }}",
+            "Questions you might have": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Questions_you_might_have', ``, 'string') }}",
+            "State/Location": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('State_Location', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "Email Address",
+              "displayName": "Email Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "Phone Number",
+              "displayName": "Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": false
+            },
+            {
+              "id": "Business Name",
+              "displayName": "Business Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "Questions you might have",
+              "displayName": "Questions you might have",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "State/Location",
+              "displayName": "State/Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        368,
+        288
+      ],
+      "id": "40e6733e-6e08-4e31-be57-05d30045640a",
+      "name": "Contact us Form1"
+    },
+    {
+      "parameters": {
+        "url": "https://www.directcouriers.com.au/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        528,
+        288
+      ],
+      "id": "95c5b0f5-e9b8-4a5d-8a28-53accfa629e9",
+      "name": "Scrape Website1"
+    },
+    {
+      "parameters": {
+        "description": "Call this tool when the user wants to track a job using Job ID, Reference number, or Order number. This tool checks all 3 formats and returns the first valid tracking link.",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "OpBKA1CMidWqw50B",
+          "cachedResultName": "Job Tracking Checker"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tracking_input": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('tracking_input', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "tracking_input"
+          ],
+          "schema": [
+            {
+              "id": "tracking_input",
+              "displayName": "tracking_input",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        688,
+        288
+      ],
+      "id": "632444f8-b149-4a44-afd8-741d65cc4b47",
+      "name": "job_tracking_checker1"
+    },
+    {
+      "parameters": {
+        "description": "=This is Job Tracking Reference tool Call this tool when someone wants to track a job using reference",
+        "workflowId": {
+          "__rl": true,
+          "value": "jPoqWxtakwYyih10",
+          "mode": "list",
+          "cachedResultName": "Job Tracking Reference"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Reference": "={{ $fromAI('Reference', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "Reference"
+          ],
+          "schema": [
+            {
+              "id": "Reference",
+              "displayName": "Reference",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        -96,
+        288
+      ],
+      "id": "ba554edf-00ab-4465-a2d7-181841fd7263",
+      "name": "Job Tracking Reference"
+    },
+    {
+      "parameters": {
+        "description": "This is Job Tracking Order No Call this tool when someone wants to track a job using order no",
+        "workflowId": {
+          "__rl": true,
+          "value": "8lxq1Tay5oNAFD7g",
+          "mode": "list",
+          "cachedResultName": "Job Tracking Order No"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Order No": "={{ $fromAI('Order_No', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "Job Number"
+          ],
+          "schema": [
+            {
+              "id": "Order No",
+              "displayName": "Order No",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        48,
+        288
+      ],
+      "id": "0dde936f-d5f3-43f0-b3e7-a19264ce41b6",
+      "name": "Job Tracking Order No"
+    },
+    {
+      "parameters": {
+        "description": "=This is Job Tracking JOB ID Call this tool when someone wants to track a job using JOB ID",
+        "workflowId": {
+          "__rl": true,
+          "value": "zvahoJx5Jxl4RONZ",
+          "mode": "list",
+          "cachedResultName": "Job Tracking JOB ID"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Job ID": "={{ $fromAI('JOB_ID', ``, 'number') }}"
+          },
+          "matchingColumns": [
+            "Order No"
+          ],
+          "schema": [
+            {
+              "id": "Job ID",
+              "displayName": "Job ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        208,
+        288
+      ],
+      "id": "67faf475-7995-4e75-99ed-94a5b47dc155",
+      "name": "Job Tracking JOB ID"
+    },
+    {
+      "parameters": {
+        "model": "meta-llama/llama-4-maverick-17b-128e-instruct",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        288
+      ],
+      "id": "0bb1a150-71d2-4b10-82d3-fd0d94015531",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "UrqxELD3QhsXCGIY",
+          "name": "Groq account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contact us Form1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Website1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "job_tracking_checker1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Job Tracking Reference": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Job Tracking Order No": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Job Tracking JOB ID": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f9f3ff54-bd5e-43b0-ad9f-1798f0ccd8bc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "290a562048df3bc87a0e698bc107e3dbe88ada8eddff0a3ba0750bc230380c39"
+  },
+  "id": "YKGePKLIjHqjU3UN",
+  "tags": []
+}

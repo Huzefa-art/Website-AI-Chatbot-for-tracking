@@ -1,0 +1,177 @@
+{
+  "name": "Job Tracking Reference demo",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "Reference"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -64,
+        -64
+      ],
+      "id": "818393fb-3c11-42e6-b9d7-91f2680a0bb4",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "url": "=https://appsrv.directcouriers.com.au/online/jobtrackgen.cl?reference={{ $json['Reference'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        176,
+        96
+      ],
+      "id": "ad1c9387-204e-4bea-8341-76e21bd223d2",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "functionCode": "const content = ($json.body || $json.data || '').toUpperCase();\n\nconst genericKeywords = [\n  \"HOME\",\n  \"TOOLS\",\n  \"CONTACT US\",\n  \"TERMS & CONDITIONS\",\n  \"DIRECT JOB TRACK\",\n  \"NO JOB FOUND\",\n  \"NOT FOUND\"\n];\n\nfor (const keyword of genericKeywords) {\n  if (content.includes(keyword)) {\n    return [{ valid: false }];\n  }\n}\nreturn [{ valid: true }];\n"
+      },
+      "name": "Check Validity",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        384,
+        96
+      ],
+      "id": "6825f4b2-06e1-4cf1-8de3-8bebe451b932"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.valid }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "IF Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        544,
+        80
+      ],
+      "id": "832aa1fa-441c-46f3-a33a-69fa1acdd746"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "message",
+              "value": "=Here is your tracking link: =https://appsrv.directcouriers.com.au/online/jobtrackgen.cl?reference={{ $('When Executed by Another Workflow').item.json.Reference }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Return Success Message",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        928,
+        16
+      ],
+      "id": "21711ed2-99ea-49f7-a341-36c03f789f2f"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "message",
+              "value": "Sorry, we couldn’t find any tracking info. Please check the number or visit https://www.directcouriers.com.au/bookings or call 13 16 10."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Return Fail Message",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        816,
+        208
+      ],
+      "id": "f175ef1b-32b3-4d58-b193-98c610c03193"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Check Validity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Validity": {
+      "main": [
+        [
+          {
+            "node": "IF Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Valid?": {
+      "main": [
+        [
+          {
+            "node": "Return Success Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return Fail Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "29ee098c-4cf7-4ad3-ac47-9e7f5339f773",
+  "meta": {
+    "instanceId": "290a562048df3bc87a0e698bc107e3dbe88ada8eddff0a3ba0750bc230380c39"
+  },
+  "id": "45yCtNhn5YpdD8GT",
+  "tags": []
+}
